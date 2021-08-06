@@ -1,0 +1,11 @@
+production:
+  api_url: "http://api.seu-dominio.com.br"
+  web_url: "http://portal.seu-dominio.com.br"
+
+development:
+  api_url: "http://api-dev.seu-dominio.com.br"
+  web_url: "http://portal-dev.seu-dominio.com.br"
+
+test:
+  api_url: "http://api-test.seu-dominio.com.br"
+  web_url: "http://portal-test.seu-dominio.com.br"

@@ -1,0 +1,11 @@
+production:
+  api_url: "http://api.rock-devops.ml"
+  web_url: "http://portal.rock-devops.ml"
+
+development:
+  api_url: "http://api-dev.rock-devops.ml"
+  web_url: "http://portal-dev.rock-devops.ml"
+
+test:
+  api_url: "http://api-test.rock-devops.ml"
+  web_url: "http://portal-test-ui.rock-devops.ml"

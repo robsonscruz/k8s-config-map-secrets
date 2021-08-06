@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-configmap
+  namespace: default
+data:
+  api-config.yml: |-
+    production:
+      api_url: "http://api.rock-devops.ml"
+      web_url: "http://portal.rock-devops.ml"
+
+    development:
+      api_url: "http://api-dev.rock-devops.ml"
+      web_url: "http://portal-dev.rock-devops.ml"
+
+    test:
+      api_url: "http://api-test.rock-devops.ml"
+      web_url: "http://portal-test-ui.rock-devops.ml" 
+---
+# https://kubernetes.io/docs/concepts/configuration/secret/#secret-types
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: kubernetes.io/token
+stringData:
+  DB_USERNAME_SECRET: usuario-db-informado
+  DB_PASSWORD_SECRET: senha-db-informado
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-sherlock
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: kube-sherlock
+  template:
+    metadata:
+      labels:
+        app: kube-sherlock
+        env: all
+    spec:
+      containers:
+      - name: kube-sherlock
+        image: robsoncruz/api-config-map:latest
+        # Compartilha o config.yaml com o container
+        volumeMounts:
+          - name: config-volume
+            mountPath: /app/config/api-config.yml
+            subPath: api-config.yml
+        ports:
+          - containerPort: 80
+        imagePullPolicy: Always
+        # Compartilha as Secrets com o container
+        envFrom:
+        - secretRef:
+            name: app-secret
+      # Sincroniza uso do volume com o container
+      volumes:
+        - name: config-volume
+          configMap:
+            name: app-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sherlock-service
+  namespace: default
+spec:
+  selector:
+    app: kube-sherlock
+  ports:
+  - port: 80
+    targetPort: 80
+  #type: LoadBalancer
